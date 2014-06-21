@@ -10,7 +10,6 @@ package config
 
 import (
 	"github.com/kelseyhightower/envconfig"
-	"path"
 	"runtime"
 )
 
@@ -35,14 +34,4 @@ func GetConfiguration() (*Configuration, error) {
 
 	err := envconfig.Process("builder", config)
 	return config, err
-}
-
-// GetClonePath returns the absolute path for cloning the repositories in.
-func (c *Configuration) GetClonePath() string {
-	return path.Join(c.WorkDir, "repositories")
-}
-
-// GetBuildPath returns the absolute path for building the containers in.
-func (c *Configuration) GetBuildPath() string {
-	return path.Join(c.WorkDir, "builds")
 }

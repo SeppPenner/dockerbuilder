@@ -3,14 +3,22 @@
 package workspace
 
 import (
-	"github.com/brocaar/dockerbuilder/config"
+	c "github.com/brocaar/dockerbuilder/config"
 	"log"
 	"os"
 	"os/exec"
+	"path"
 )
 
+var config *c.Configuration
+
+// SetConfig sets the configuration for this workspace.
+func SetConfig(conf *c.Configuration) {
+	config = conf
+}
+
 // Prepare prepares the workspace environment and does some checks.
-func Prepare(config *config.Configuration) {
+func Prepare() {
 	log.Println("preparing workspace")
 	var err error
 	var out []byte
@@ -27,13 +35,23 @@ func Prepare(config *config.Configuration) {
 	}
 	log.Printf("docker version:\n---\n%s---\n", out)
 
-	err = os.Mkdir(config.GetClonePath(), 0700)
+	err = os.Mkdir(GetClonePath(), 0700)
 	if err != nil && !os.IsExist(err) {
-		log.Fatalf("could not create clone path: %s", config.GetClonePath())
+		log.Fatalf("could not create clone path: %s", GetClonePath())
 	}
 
-	err = os.Mkdir(config.GetBuildPath(), 0700)
+	err = os.Mkdir(GetBuildPath(), 0700)
 	if err != nil && !os.IsExist(err) {
-		log.Fatalf("cound not create build path: %s", config.GetBuildPath())
+		log.Fatalf("cound not create build path: %s", GetBuildPath())
 	}
+}
+
+// GetClonePath returns the absolute path for cloning the repositories in.
+func GetClonePath() string {
+	return path.Join(config.WorkDir, "repositories")
+}
+
+// GetBuildPath returns the absolute path for building the containers in.
+func GetBuildPath() string {
+	return path.Join(config.WorkDir, "builds")
 }
