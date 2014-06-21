@@ -36,13 +36,13 @@ func Prepare() {
 	}
 	log.Printf("docker version:\n---\n%s---\n", out)
 
-	err = os.Mkdir(GetCloneBasePath(), 0700)
-	if err != nil && !os.IsExist(err) {
+	err = os.MkdirAll(GetCloneBasePath(), 0700)
+	if err != nil {
 		log.Fatalf("could not create clone path: %s", GetCloneBasePath())
 	}
 
-	err = os.Mkdir(GetBuildBasePath(), 0700)
-	if err != nil && !os.IsExist(err) {
+	err = os.MkdirAll(GetBuildBasePath(), 0700)
+	if err != nil {
 		log.Fatalf("cound not create build path: %s", GetBuildBasePath())
 	}
 }
