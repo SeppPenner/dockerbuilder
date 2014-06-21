@@ -4,6 +4,7 @@ package workspace
 
 import (
 	c "github.com/brocaar/dockerbuilder/config"
+	"github.com/brocaar/dockerbuilder/repository"
 	"log"
 	"os"
 	"os/exec"
@@ -35,23 +36,28 @@ func Prepare() {
 	}
 	log.Printf("docker version:\n---\n%s---\n", out)
 
-	err = os.Mkdir(GetClonePath(), 0700)
+	err = os.Mkdir(GetCloneBasePath(), 0700)
 	if err != nil && !os.IsExist(err) {
-		log.Fatalf("could not create clone path: %s", GetClonePath())
+		log.Fatalf("could not create clone path: %s", GetCloneBasePath())
 	}
 
-	err = os.Mkdir(GetBuildPath(), 0700)
+	err = os.Mkdir(GetBuildBasePath(), 0700)
 	if err != nil && !os.IsExist(err) {
-		log.Fatalf("cound not create build path: %s", GetBuildPath())
+		log.Fatalf("cound not create build path: %s", GetBuildBasePath())
 	}
 }
 
-// GetClonePath returns the absolute path for cloning the repositories in.
-func GetClonePath() string {
-	return path.Join(config.WorkDir, "repositories")
+// GetCloneBasePath returns the absolute path for cloning the repositories in.
+func GetCloneBasePath() string {
+	return path.Join(config.WorkDir, "clones")
 }
 
-// GetBuildPath returns the absolute path for building the containers in.
-func GetBuildPath() string {
+// GetBuildBasePath returns the absolute path for building the containers in.
+func GetBuildBasePath() string {
 	return path.Join(config.WorkDir, "builds")
+}
+
+// GetClonePath returns the absolute path for cloning the repository in.
+func GetClonePath(repo *repository.Repository) string {
+	return path.Join(GetCloneBasePath(), repo.Host, repo.Owner, repo.Name)
 }

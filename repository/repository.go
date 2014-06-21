@@ -21,11 +21,11 @@ type Repository struct {
 }
 
 // NewRepository returns a new instance of the Repository type.
-func NewRepository(host, name, scm string) *Repository {
+func NewRepository(host, owner, name, scm string) *Repository {
 	return &Repository{
-		Name:  name,
-		Owner: name,
 		Host:  host,
+		Owner: owner,
+		Name:  name,
 		SCM:   scm,
 	}
 }
