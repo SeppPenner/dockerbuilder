@@ -15,18 +15,17 @@ import (
 
 type Configuration struct {
 	WorkDir              string
-	Debug                bool
 	NumWorkers           int
 	BindAddress          string
 	TaskQueueSize        int
 	DockerIndexNamespace string
+	GitHubSecret         string
 }
 
 // GetConfiguration creates a new instance of the Configuration struct,
 // looks for matching environment variables, and returns.
 func GetConfiguration() (*Configuration, error) {
 	config := &Configuration{
-		Debug:         false,
 		WorkDir:       "/tmp",
 		NumWorkers:    runtime.NumCPU(),
 		BindAddress:   "0.0.0.0:5000",
