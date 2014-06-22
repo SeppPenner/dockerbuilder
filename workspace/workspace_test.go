@@ -36,3 +36,13 @@ func TestGetClonePath(t *testing.T) {
 		t.Errorf("expected: %s, got: %s", expected, clonePath)
 	}
 }
+
+// TestGetBuildPath tests the GetBuildPath function.
+func TestGetBuildPath(t *testing.T) {
+	repo := repository.NewRepository(repository.HostGitHub, "brocaar", "dockerbuilder", repository.ScmGit)
+	buildPath := GetBuildPath(repo)
+	expected := "/tmp/builds/github.com/brocaar/dockerbuilder"
+	if buildPath != expected {
+		t.Errorf("expected: %s, got: %s", expected, buildPath)
+	}
+}

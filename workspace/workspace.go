@@ -61,3 +61,8 @@ func GetBuildBasePath() string {
 func GetClonePath(repo *repository.Repository) string {
 	return path.Join(GetCloneBasePath(), repo.Host, repo.Owner, repo.Name)
 }
+
+// GetBuildPath returns the absolute path for building the container in.
+func GetBuildPath(repo *repository.Repository) string {
+	return path.Join(GetBuildBasePath(), repo.Host, repo.Owner, repo.Name)
+}
