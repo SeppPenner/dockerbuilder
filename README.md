@@ -10,7 +10,7 @@ the Docker Index when you create a new tag on GitHub.
 - [x] implement cloning of repository
 - [x] implement creating build directory and checkout specific revision
 - [x] implement building the container
-- [ ] implement pushing the repository to the Docker Index
+- [x] implement pushing the repository to the Docker Index
 - [x] implement cleaning up the container after push
 - [ ] implement GitHub hook
 - [ ] add Makefile for testing and building
