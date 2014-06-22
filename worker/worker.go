@@ -72,6 +72,13 @@ func Worker(taskQueue chan *WorkerTask) {
 					}
 				}()
 			}
+
+			// push container
+			err = pushContainer(containerName)
+			if err != nil {
+				log.Printf("pushing the container failed: %s\n", err)
+				return
+			}
 		}()
 	}
 }
@@ -162,5 +169,11 @@ func buildContainer(buildPath, containerName string) error {
 func removeContainer(containerName string) error {
 	log.Printf("removing container: %s\n", containerName)
 	cmd := exec.Command("docker", "rmi", containerName)
+	return cmd.Run()
+}
+
+func pushContainer(containerName string) error {
+	log.Printf("pushing container: %s\n", containerName)
+	cmd := exec.Command("docker", "push", containerName)
 	return cmd.Run()
 }
