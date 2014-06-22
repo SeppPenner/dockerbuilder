@@ -24,39 +24,52 @@ type WorkerTask struct {
 // build, it will push it to the Docker index.
 func Worker(taskQueue chan *WorkerTask) {
 	var buildPath string
+	var containerName string
 	var err error
 
 	for {
 		workerTask := <-taskQueue
 
-		// get an up-to-date copy of the repository
-		err = cloneOrFetchRepo(workerTask.Repository)
-		if err != nil {
-			log.Printf("something went wrong while getting or fetching the repository: %s\n", err)
-			continue
-		}
+		func() {
+			// get an up-to-date copy of the repository
+			err = cloneOrFetchRepo(workerTask.Repository)
+			if err != nil {
+				log.Printf("something went wrong while getting or fetching the repository: %s\n", err)
+				return
+			}
 
-		// prepare the build path
-		buildPath, err = prepareAndGetBuildPath(workerTask.Repository, workerTask.Revision)
-		if err != nil {
-			log.Printf("something went wrong while preparing the build path: %s\n", err)
-			continue
-		}
+			// prepare the build path
+			buildPath, err = prepareAndGetBuildPath(workerTask.Repository, workerTask.Revision)
+			if err != nil {
+				log.Printf("something went wrong while preparing the build path: %s\n", err)
+				return
+			}
 
-		// build container
-		containerName := getContainerName(workerTask.Repository, workerTask.Revision, workerTask.DockerIndexNamespace)
-		err = buildContainer(buildPath, containerName)
-		if err != nil {
-			log.Printf("failed building the container: %s, in :%s", containerName, buildPath)
-			continue
-		}
+			// cleanup build when the function returns
+			defer func() {
+				log.Printf("removing build: %s\n", buildPath)
+				err = os.RemoveAll(buildPath)
+				if err != nil {
+					log.Printf("removing build failed: %s\n", err)
+				}
+			}()
 
-		// clean up the build path
-		log.Printf("removing build path: %s\n", buildPath)
-		err = os.RemoveAll(buildPath)
-		if err != nil {
-			log.Printf("something went wrong while cleaning up the build path: %s\n", err)
-		}
+			// build container
+			containerName = getContainerName(workerTask.Repository, workerTask.Revision, workerTask.DockerIndexNamespace)
+			err = buildContainer(buildPath, containerName)
+			if err != nil {
+				log.Printf("failed building the container: %s, in :%s", containerName, buildPath)
+				return
+			}
+
+			// cleanup container when the function returns
+			defer func() {
+				err = removeContainer(containerName)
+				if err != nil {
+					log.Printf("removing container failed: %s\n", containerName)
+				}
+			}()
+		}()
 	}
 }
 
@@ -140,5 +153,11 @@ func buildContainer(buildPath, containerName string) error {
 	log.Printf("building container: %s, in: %s\n", containerName, buildPath)
 	cmd := exec.Command("docker", "build", "-t", containerName, ".")
 	cmd.Dir = buildPath
+	return cmd.Run()
+}
+
+func removeContainer(containerName string) error {
+	log.Printf("removing container: %s\n", containerName)
+	cmd := exec.Command("docker", "rmi", containerName)
 	return cmd.Run()
 }
