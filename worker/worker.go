@@ -14,8 +14,9 @@ import (
 )
 
 type WorkerTask struct {
-	Revision   string
-	Repository *repository.Repository
+	Revision             string
+	DockerIndexNamespace string
+	Repository           *repository.Repository
 }
 
 // Worker executes the WorkerTask items in the queue.
@@ -39,6 +40,14 @@ func Worker(taskQueue chan *WorkerTask) {
 		buildPath, err = prepareAndGetBuildPath(workerTask.Repository, workerTask.Revision)
 		if err != nil {
 			log.Printf("something went wrong while preparing the build path: %s\n", err)
+			continue
+		}
+
+		// build container
+		containerName := getContainerName(workerTask.Repository, workerTask.Revision, workerTask.DockerIndexNamespace)
+		err = buildContainer(buildPath, containerName)
+		if err != nil {
+			log.Printf("failed building the container: %s, in :%s", containerName, buildPath)
 			continue
 		}
 
@@ -117,4 +126,19 @@ func prepareAndGetBuildPath(repo *repository.Repository, revision string) (strin
 	}
 
 	return buildPath, nil
+}
+
+func getContainerName(repo *repository.Repository, revision, dockerIndexNamespace string) string {
+	if dockerIndexNamespace != "" {
+		return fmt.Sprintf("%s/%s:%s", dockerIndexNamespace, repo.Name, revision)
+	} else {
+		return fmt.Sprintf("%s:%s", repo.Name, revision)
+	}
+}
+
+func buildContainer(buildPath, containerName string) error {
+	log.Printf("building container: %s, in: %s\n", containerName, buildPath)
+	cmd := exec.Command("docker", "build", "-t", containerName, ".")
+	cmd.Dir = buildPath
+	return cmd.Run()
 }

@@ -14,11 +14,12 @@ import (
 )
 
 type Configuration struct {
-	WorkDir       string
-	Debug         bool
-	NumWorkers    int
-	BindAddress   string
-	TaskQueueSize int
+	WorkDir              string
+	Debug                bool
+	NumWorkers           int
+	BindAddress          string
+	TaskQueueSize        int
+	DockerIndexNamespace string
 }
 
 // GetConfiguration creates a new instance of the Configuration struct,
