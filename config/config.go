@@ -20,16 +20,18 @@ type Configuration struct {
 	TaskQueueSize        int
 	DockerIndexNamespace string
 	GitHubSecret         string
+	CleanupContainer     bool
 }
 
 // GetConfiguration creates a new instance of the Configuration struct,
 // looks for matching environment variables, and returns.
 func GetConfiguration() (*Configuration, error) {
 	config := &Configuration{
-		WorkDir:       "/tmp",
-		NumWorkers:    runtime.NumCPU(),
-		BindAddress:   "0.0.0.0:5000",
-		TaskQueueSize: 100000,
+		WorkDir:          "/tmp",
+		NumWorkers:       runtime.NumCPU(),
+		BindAddress:      "0.0.0.0:5000",
+		TaskQueueSize:    100000,
+		CleanupContainer: true,
 	}
 
 	err := envconfig.Process("builder", config)

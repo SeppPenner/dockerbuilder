@@ -17,6 +17,7 @@ type WorkerTask struct {
 	Revision             string
 	DockerIndexNamespace string
 	Repository           *repository.Repository
+	CleanupContainer     bool
 }
 
 // Worker executes the WorkerTask items in the queue.
@@ -63,12 +64,14 @@ func Worker(taskQueue chan *WorkerTask) {
 			}
 
 			// cleanup container when the function returns
-			defer func() {
-				err = removeContainer(containerName)
-				if err != nil {
-					log.Printf("removing container failed: %s\n", containerName)
-				}
-			}()
+			if workerTask.CleanupContainer == true {
+				defer func() {
+					err = removeContainer(containerName)
+					if err != nil {
+						log.Printf("removing container failed: %s\n", containerName)
+					}
+				}()
+			}
 		}()
 	}
 }

@@ -74,6 +74,12 @@ Default: ``0.0.0.0:5000``. The address for binding the HTTP server.
 Default: ``100000``. The size of the task-queue. One this limit is reached,
 HTTP calls to the webhook will block until there is space in the queue.
 
+#### ``BUILDER_CLEANUPCONTAINER``
+
+Default: ``true``. Cleanup the container after pushing it to the Docker Index.
+Setting this to ``true`` saves diskspace but results in slower builds. Setting
+this to ``false`` will speedup the builds, but will use more storage.
+
 #### ``BUILDER_DOCKERINDEXNAMESPACE``
 
 Default: not set. The Docker Index namespace, usually this is your
