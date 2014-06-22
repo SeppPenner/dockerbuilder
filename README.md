@@ -43,7 +43,7 @@ $ go get github.com/brocaar/dockerbuilder
 
     * **Payload URL**: *http://yourhostname.tld*/github.com/hook
     * **Content type**: application/json
-    * **Secret**: the that you have set in ``BUILDER_GITHUBSECRET`` (see
+    * **Secret**: the value that you have set in ``BUILDER_GITHUBSECRET`` (see
       configuration)
     * **Which events would you like to trigger this webhook?**: Click
       *Let me select individual events* and select *Create*
