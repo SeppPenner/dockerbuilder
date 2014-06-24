@@ -13,6 +13,10 @@ import (
 	"path"
 )
 
+// A channel for worker tasks.
+type TaskQueue chan *WorkerTask
+
+// A struct containing all the data for a worker task
 type WorkerTask struct {
 	Revision             string
 	DockerIndexNamespace string
@@ -23,7 +27,7 @@ type WorkerTask struct {
 // Worker executes the WorkerTask items in the queue.
 // This will clone the repository, build the container and on a successful
 // build, it will push it to the Docker index.
-func Worker(taskQueue chan *WorkerTask) {
+func Worker(taskQueue TaskQueue) {
 	var buildPath string
 	var containerName string
 	var err error

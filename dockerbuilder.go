@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/brocaar/dockerbuilder/config"
+	"github.com/brocaar/dockerbuilder/handler"
 	"github.com/brocaar/dockerbuilder/worker"
 	"github.com/brocaar/dockerbuilder/workspace"
 	"log"
@@ -20,7 +21,7 @@ func main() {
 	workspace.Prepare()
 
 	// make the task queue
-	var taskQueue = make(chan *worker.WorkerTask, config.NumWorkers)
+	var taskQueue = make(worker.TaskQueue, config.TaskQueueSize)
 
 	// start worker processes
 	log.Printf("starting %d workers\n", config.NumWorkers)
@@ -28,5 +29,10 @@ func main() {
 		go worker.Worker(taskQueue)
 	}
 
+	// add http handler
+	gitHubHandler := handler.NewGitHubHandler(taskQueue)
+	http.HandleFunc("/github.com/hook", gitHubHandler.Hook)
+
+	log.Printf("starting webserver, listening on: %s", config.BindAddress)
 	http.ListenAndServe(config.BindAddress, nil)
 }
