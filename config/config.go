@@ -19,7 +19,7 @@ type Configuration struct {
 	BindAddress          string
 	TaskQueueSize        int
 	DockerIndexNamespace string
-	GitHubSecret         string
+	GitHubSecret         []byte
 	CleanupContainer     bool
 }
 

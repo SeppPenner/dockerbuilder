@@ -30,7 +30,7 @@ func main() {
 	}
 
 	// add http handler
-	gitHubHandler := handler.NewGitHubHandler(taskQueue)
+	gitHubHandler := handler.NewGitHubHandler(taskQueue, config.GitHubSecret)
 	http.HandleFunc("/github.com/hook", gitHubHandler.Hook)
 
 	log.Printf("starting webserver, listening on: %s", config.BindAddress)

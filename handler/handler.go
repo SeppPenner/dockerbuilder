@@ -19,9 +19,10 @@ type GitHubHandler struct {
 }
 
 // NewGitHubHandler returns a new instance of GitHubHandler.
-func NewGitHubHandler(taskQueue worker.TaskQueue) *GitHubHandler {
+func NewGitHubHandler(taskQueue worker.TaskQueue, secret []byte) *GitHubHandler {
 	return &GitHubHandler{
 		taskQueue: taskQueue,
+		secret:    secret,
 	}
 }
 
