@@ -7,6 +7,8 @@ import (
 	"encoding/hex"
 	"github.com/brocaar/dockerbuilder/worker"
 	"hash"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -25,6 +27,18 @@ func NewGitHubHandler(taskQueue worker.TaskQueue) *GitHubHandler {
 
 // Hook is a HTTP handler for webhook requests by GitHub.
 func (h *GitHubHandler) Hook(w http.ResponseWriter, r *http.Request) {
+	requestBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("could not read request body: %s\n", err)
+		return
+	}
+
+	// check the signature
+	if checkGitHubMac(h.secret, r.Header.Get("X-Hub-Signature"), requestBody) != true {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	// github ping
 	if r.Header.Get("X-Github-Event") == "ping" {
 		w.WriteHeader(http.StatusOK)

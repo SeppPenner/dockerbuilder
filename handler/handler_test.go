@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -50,7 +51,7 @@ func TestCheckGitHubMac(t *testing.T) {
 			"VerySecret",
 			"sha1=3c24d84f47692d0b4aef2a5002e0bb6beb25dc75",
 			"hello world",
-			true,
+			false,
 		},
 	}
 
@@ -65,13 +66,14 @@ func TestCheckGitHubMac(t *testing.T) {
 // Test GitHub ping event returns 200.
 func TestGitHubHandlerPing(t *testing.T) {
 	w := httptest.NewRecorder()
-	r, err := http.NewRequest("POST", "http://example.com/github/hook", nil)
+	r, err := http.NewRequest("POST", "http://example.com/github/hook", strings.NewReader(""))
 	if err != nil {
 		t.Errorf("creating request failed: %s", err)
 	}
 	r.Header.Add("X-Github-Event", "ping")
+	r.Header.Add("X-Hub-Signature", "sha1=fec4ff24a565056b701bbd105f99c268f725451c")
 
-	handler := &GitHubHandler{}
+	handler := &GitHubHandler{secret: []byte("verysecret")}
 	handler.Hook(w, r)
 
 	if w.Code != 200 {
