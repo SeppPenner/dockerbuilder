@@ -24,13 +24,13 @@ func Prepare() {
 	var err error
 	var out []byte
 
-	out, err = exec.Command("git", "version").Output()
+	out, err = exec.Command("/usr/bin/git", "version").Output()
 	if err != nil {
 		log.Fatalf("could not execute 'git version': %s", err)
 	}
 	log.Print(string(out))
 
-	out, err = exec.Command("docker", "version").Output()
+	out, err = exec.Command("/usr/bin/docker", "version").Output()
 	if err != nil {
 		log.Fatalf("could not execute 'docker version': %s", err)
 	}
