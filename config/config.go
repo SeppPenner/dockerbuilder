@@ -29,7 +29,7 @@ func GetConfiguration() (*Configuration, error) {
 	config := &Configuration{
 		WorkDir:          "/tmp",
 		NumWorkers:       runtime.NumCPU(),
-		BindAddress:      "0.0.0.0:5000",
+		BindAddress:      "0.0.0.0:80",
 		TaskQueueSize:    100000,
 		CleanupContainer: true,
 	}
