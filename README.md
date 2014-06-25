@@ -5,18 +5,6 @@ the Docker Index when you create a new tag on GitHub.
 
 **Important:** DockerBuilder is work-in-progress and is not usable yet!
 
-### Todos before v0.1.0
-
-- [x] implement cloning of repository
-- [x] implement creating build directory and checkout specific revision
-- [x] implement building the container
-- [x] implement pushing the repository to the Docker Index
-- [x] implement cleaning up the container after push
-- [x] implement GitHub hook
-- [x] add Makefile for testing and building
-- [ ] add Dockerfile
-
-
 ## Installation
 
 ### Requirements
