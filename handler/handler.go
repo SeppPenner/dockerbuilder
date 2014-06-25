@@ -35,7 +35,7 @@ func (h *GitHubHandler) Hook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check the signature
-	if checkGitHubMac(h.secret, r.Header.Get("X-Hub-Signature"), requestBody) != true {
+	if len(h.secret) > 0 && checkGitHubMac(h.secret, r.Header.Get("X-Hub-Signature"), requestBody) != true {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}

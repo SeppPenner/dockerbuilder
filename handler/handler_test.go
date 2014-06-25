@@ -71,9 +71,8 @@ func TestGitHubHandlerPing(t *testing.T) {
 		t.Errorf("creating request failed: %s", err)
 	}
 	r.Header.Add("X-Github-Event", "ping")
-	r.Header.Add("X-Hub-Signature", "sha1=fec4ff24a565056b701bbd105f99c268f725451c")
 
-	handler := &GitHubHandler{secret: []byte("verysecret")}
+	handler := &GitHubHandler{}
 	handler.Hook(w, r)
 
 	if w.Code != 200 {
