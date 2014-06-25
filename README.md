@@ -13,7 +13,7 @@ the Docker Index when you create a new tag on GitHub.
 - [x] implement pushing the repository to the Docker Index
 - [x] implement cleaning up the container after push
 - [x] implement GitHub hook
-- [ ] add Makefile for testing and building
+- [x] add Makefile for testing and building
 - [ ] add Dockerfile
 
 
