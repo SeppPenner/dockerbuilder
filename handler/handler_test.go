@@ -2,10 +2,13 @@ package handler
 
 import (
 	"crypto/sha1"
+	"github.com/brocaar/dockerbuilder/config"
+	"github.com/brocaar/dockerbuilder/worker"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestGetMacString(t *testing.T) {
@@ -66,16 +69,70 @@ func TestCheckGitHubMac(t *testing.T) {
 // Test GitHub ping event returns 200.
 func TestGitHubHandlerPing(t *testing.T) {
 	w := httptest.NewRecorder()
-	r, err := http.NewRequest("POST", "http://example.com/github/hook", strings.NewReader(""))
-	if err != nil {
-		t.Errorf("creating request failed: %s", err)
-	}
+	r, _ := http.NewRequest("POST", "http://example.com/github/hook", strings.NewReader(""))
 	r.Header.Add("X-Github-Event", "ping")
 
-	handler := &GitHubHandler{}
+	handler := &GitHubHandler{config: &config.Configuration{}}
 	handler.Hook(w, r)
 
 	if w.Code != 200 {
 		t.Errorf("expected: 200, got: %d", w.Code)
 	}
 }
+
+// Test GitHub create tag event
+func TestGitHubHandlerCreateTag(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("POST", "http://example.com/github/hook", strings.NewReader(githubCreateTagPayload))
+	r.Header.Add("X-Github-Event", "create")
+
+	config := &config.Configuration{
+		DockerIndexNamespace: "dockeruser",
+		CleanupContainer:     true,
+	}
+	var taskQueue = make(worker.TaskQueue, 1)
+
+	handler := NewGitHubHandler(taskQueue, config)
+	handler.Hook(w, r)
+
+	if w.Code != 200 {
+		t.Errorf("exected: 200, got: %d", w.Code)
+	}
+
+	select {
+	case workerTask := <-taskQueue:
+		if workerTask.Revision != "v0.1.2" {
+			t.Errorf("expected revision: v0.1.2, got: %s", workerTask.Revision)
+		}
+
+		if workerTask.DockerIndexNamespace != "dockeruser" {
+			t.Errorf("expected docker index namespace: dockeruser, got: %s", workerTask.DockerIndexNamespace)
+		}
+
+		if workerTask.Repository.Name != "dockerbuilder" {
+			t.Errorf("expected repo name: dockerbuilder, got: %s", workerTask.Repository.Name)
+		}
+
+		if workerTask.Repository.Owner != "brocaar" {
+			t.Errorf("expected repo owner: brocaar, got: %s", workerTask.Repository.Owner)
+		}
+
+		if workerTask.CleanupContainer != true {
+			t.Errorf("expected cleanup container: true, got: %t", workerTask.CleanupContainer)
+		}
+	case <-time.After(1):
+		t.Error("exepected a worker-task in the channel, but it was empty!")
+	}
+}
+
+var githubCreateTagPayload = `{
+	"ref": "v0.1.2",
+	"ref_type": "tag",
+	"repository": {
+		"name": "dockerbuilder",
+		"full_name": "brocaar/dockerbuilder",
+		"owner": {
+			"login": "brocaar"
+		}
+	}
+}`
