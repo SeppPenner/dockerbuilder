@@ -63,7 +63,7 @@ func Worker(taskQueue TaskQueue) {
 			containerName = getContainerName(workerTask.Repository, workerTask.Revision, workerTask.DockerIndexNamespace)
 			err = buildContainer(buildPath, containerName)
 			if err != nil {
-				log.Printf("failed building the container: %s, in :%s", containerName, buildPath)
+				log.Printf("failed building the container: %s, in :%s, reason: %s", containerName, buildPath, err)
 				return
 			}
 
