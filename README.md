@@ -55,7 +55,7 @@ Default: the number of available CPU's. The number of concurrent workers.
 
 #### ``BUILDER_BINDADDRESS``
 
-Default: ``0.0.0.0:5000``. The address for binding the HTTP server.
+Default: ``0.0.0.0:80``. The address for binding the HTTP server.
 
 #### ``BUILDER_TASKQUEUESIZE``
 
