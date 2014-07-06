@@ -78,10 +78,14 @@ func Worker(taskQueue TaskQueue) {
 			}
 
 			// push container
-			err = pushContainer(containerName)
-			if err != nil {
-				log.Printf("pushing the container failed: %s\n", err)
-				return
+			if workerTask.DockerIndexNamespace != "" {
+				err = pushContainer(containerName)
+				if err != nil {
+					log.Printf("pushing the container failed: %s\n", err)
+					return
+				}
+			} else {
+				log.Printf("not pushing container %s, BUILDER_DOCKERINDEXNAMESPACE is not set\n", containerName)
 			}
 		}()
 	}

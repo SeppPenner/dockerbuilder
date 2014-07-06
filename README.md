@@ -71,7 +71,8 @@ this to ``false`` will speedup the builds, but will use more storage.
 #### ``BUILDER_DOCKERINDEXNAMESPACE``
 
 Default: not set. The Docker Index namespace, usually this is your
-``hub.docker.com`` username.
+``hub.docker.com`` username. If this is not set, the container will not be
+pushed to the Docker Index.
 
 #### ``BUILDER_GITHUBSECRET``
 
