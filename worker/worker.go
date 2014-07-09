@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 )
 
 // A channel for worker tasks.
@@ -171,6 +172,15 @@ func buildContainer(buildPath, containerName string) error {
 	log.Printf("building container: %s, in: %s\n", containerName, buildPath)
 	cmd := exec.Command("docker", "build", "-t", containerName, ".")
 	cmd.Dir = buildPath
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	// tag the builded container as well as containername:latest
+	containerNameParts := strings.SplitN(containerName, ":", 2)
+	log.Printf("tagging builded container: %s as: %s:latest", containerName, containerNameParts[0])
+	cmd = exec.Command("docker", "tag", containerName, containerNameParts[0])
 	return cmd.Run()
 }
 
